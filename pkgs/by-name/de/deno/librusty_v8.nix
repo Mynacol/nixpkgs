@@ -1,3 +1,26 @@
+# librusty_v8 - Rust bindings to V8, built from source
+#
+# This build script compiles V8 and its Rust bindings from source instead of
+# downloading prebuilt binaries. The build process:
+#
+# 1. Fetches rusty_v8 source with submodules (includes V8 source)
+# 2. Uses V8_FROM_SOURCE=1 to trigger compilation from source
+# 3. Compiles V8 using gn + ninja (takes 30+ minutes)
+# 4. Builds Rust bindings with cargo
+# 5. Extracts the resulting librusty_v8.a static library
+#
+# The output is a single .a file that can be used with RUSTY_V8_ARCHIVE
+# environment variable by packages like deno.
+#
+# Build requirements based on:
+# - rusty_v8 README.md: https://github.com/denoland/rusty_v8
+# - Chromium build patterns in nixpkgs (similar V8 dependencies)
+#
+# Note: This is a resource-intensive build requiring:
+# - 30+ minutes compile time (depending on hardware)
+# - Significant disk space for V8 source and build artifacts
+# - Clang 19+ for bindgen (V8's libc++ builtin type traits)
+
 {
   lib,
   stdenv,
