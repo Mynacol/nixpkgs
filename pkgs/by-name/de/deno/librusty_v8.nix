@@ -40,10 +40,12 @@
 
 let
   # Python with packages required for V8 build scripts
-  python3WithPackages = python3.withPackages (ps: with ps; [
-    setuptools
-  ]);
-  
+  python3WithPackages = python3.withPackages (
+    ps: with ps; [
+      setuptools
+    ]
+  );
+
   # Build the rusty_v8 crate which compiles V8 from source
   rusty_v8_build = rustPlatform.buildRustPackage rec {
     pname = "librusty_v8";
@@ -71,9 +73,7 @@ let
       rustPlatform.bindgenHook
     ];
 
-    buildInputs = [
-      glib
-    ];
+    buildInputs = [ glib ];
 
     # Build V8 from source instead of downloading prebuilt binaries
     # Based on rusty_v8 documentation and chromium build requirements
@@ -99,24 +99,24 @@ let
     # Custom build phase to properly build the V8 library
     buildPhase = ''
       runHook preBuild
-      
+
       # Build the library which will compile V8 from source
       # This can take 30+ minutes depending on the system
       cargo build --release --lib
-      
+
       runHook postBuild
     '';
 
     # Install the full build tree so we can extract the static library later
     installPhase = ''
       runHook preInstall
-      
+
       # Create output directory with the build artifacts
       mkdir -p $out
-      
+
       # Copy the entire target directory to preserve the build structure
       cp -r target $out/
-      
+
       runHook postInstall
     '';
 
@@ -138,28 +138,28 @@ in
 stdenv.mkDerivation {
   pname = "librusty_v8";
   inherit (rusty_v8_build) version;
-  
+
   dontUnpack = true;
   dontBuild = true;
-  
+
   installPhase = ''
     # Find the static library in the build output
     libfile=$(find ${rusty_v8_build}/target -name "librusty_v8.a" -type f | head -n 1)
-    
+
     if [ -z "$libfile" ]; then
       echo "Error: librusty_v8.a not found in build output!"
       echo "Available .a files:"
       find ${rusty_v8_build}/target -name "*.a" -type f
       exit 1
     fi
-    
+
     echo "Found librusty_v8.a at: $libfile"
-    
+
     # Copy the static library as a single file output
     # This matches what deno's RUSTY_V8_ARCHIVE expects
     cp "$libfile" $out
   '';
-  
+
   meta = {
     description = "Rust bindings to V8 - built from source";
     homepage = "https://github.com/denoland/rusty_v8";
@@ -176,3 +176,4 @@ stdenv.mkDerivation {
     # and requires significant disk space and memory
   };
 }
+
