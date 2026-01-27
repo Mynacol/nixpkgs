@@ -124,7 +124,7 @@ let
       description = "Rust bindings to V8 - built from source (intermediate build)";
       homepage = "https://github.com/denoland/rusty_v8";
       license = lib.licenses.mit;
-      maintainers = with lib.maintainers; [ ];
+      maintainers = [ ];
       platforms = [
         "x86_64-linux"
         "aarch64-linux"
@@ -164,7 +164,7 @@ stdenv.mkDerivation {
     description = "Rust bindings to V8 - built from source";
     homepage = "https://github.com/denoland/rusty_v8";
     license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ ];
+    maintainers = [ ];
     # Building V8 from source requires significant resources and time
     platforms = [
       "x86_64-linux"
